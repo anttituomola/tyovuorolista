@@ -29,8 +29,11 @@ const CalendarEl = () => {
             },
         })
     }, [])
-    
-    
+
+    const closeModal = () => {
+        setModalVisible(false)
+    }
+
     const dateClick = (info) => {
         const calendarAPI = info.view.calendar
         calendarAPI.addEvent({
@@ -40,18 +43,18 @@ const CalendarEl = () => {
             end: info.dateStr,
         })
     }
-    
+
     const eventClick = (info) => {
-        /* let calendar = info.view.calendar
-        calendar.getEventById(info.event.id).remove() */
-        setModalVisible(!modalVisible)
+/*         let calendar = info.view.calendar
+ */        /* calendar.getEventById(info.event.id).remove() */
+        setModalVisible(true)
     }
 
 
 
     return (
         <>
-            {modalVisible && <Modal />}
+            {modalVisible && <Modal closeModal={closeModal} modalVisible={modalVisible}/>}
             <FullCalendar
                 locale={'fi'}
                 firstDay={1}
@@ -63,7 +66,7 @@ const CalendarEl = () => {
                 droppable={true}
                 editable
                 selectable
-            
+
             />
             <h1 id="front-of-house">Front-of-house</h1>
             <h1 id="kitchen">Kitchen</h1>
