@@ -2,13 +2,14 @@ import styles from "styles/Modal.module.css"
 
 type Props = {
     modalVisible: boolean,
-    closeModal: () => void
+    closeModal: () => void,
+    params: any
 }
 import React, {useEffect, useRef } from 'react'
 
 const Modal = (props: Props) => {
     const modalRef = useRef(null)
-
+    console.log(props.params)
     useOnClickOutside(modalRef, () => props.closeModal());
 
     function useOnClickOutside(ref, handler) {
