@@ -4,7 +4,7 @@ import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction"
-import DraggableShift from "components/DraggableShift"
+import DraggableShift from "components/DraggableShift.js"
 import cuid from "cuid"
 
 export default function App() {
