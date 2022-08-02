@@ -22,7 +22,7 @@ export default function App() {
     })
 
     // handle event receive
-    const handleEventReceive = (eventInfo: any) => {
+    const handleEventReceive = (eventInfo) => {
         const newEvent = {
             id: cuid(),
             title: eventInfo.draggedEl.getAttribute("title"),
