@@ -15,17 +15,26 @@ const LoginForm = (props: Props) => {
         if (isCreatingNewAccount) {
             try {
                 const result = await createUser()
+                setEmail('')
+                setPassword('')
+                setIsCreatingNewAccount(false)
             } catch (error) {
                 console.log(error)
             }
         } else {
             // Kutsutaan next-authin signIn-funktiota
-            const result = await signIn("credentials", {
-                redirect: false,
-                email: email,
-                password: password
-            })
-            console.log(result)
+            try {
+                const result = await signIn("credentials", {
+                    redirect: false,
+                    email: email,
+                    password: password
+                })
+                console.log(result)
+                setEmail('')
+                setPassword('')
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
     // Tämä funktio soittaa tekemäämme rajapintaan, joka puolestaan soittaa tietokantaan
@@ -46,8 +55,8 @@ const LoginForm = (props: Props) => {
         <div>
             {session ? <p>You are logged in</p> : <p>You are not logged in</p>}
             {isCreatingNewAccount ? <h1>Create new account</h1> : <h1>Login</h1>}
-            <InputUnstyled type="email" onChange={(event) => setEmail(event?.target.value)} />
-            <InputUnstyled type="password" onChange={(event) => setPassword(event?.target.value)} />
+            <InputUnstyled value={email} placeholder="Email" type="email" required={true} autoFocus={true} onChange={(event) => setEmail(event?.target.value)} />
+            <InputUnstyled value={password} placeholder="Password" type="password" required={true} onChange={(event) => setPassword(event?.target.value)} />
             {isCreatingNewAccount ?
                 <ButtonUnstyled onClick={() => submitHandler()}>Create account</ButtonUnstyled> :
                 <ButtonUnstyled onClick={() => submitHandler()}>Login</ButtonUnstyled>}
