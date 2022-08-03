@@ -43,7 +43,7 @@ export default function App() {
     return (
         <div className="App">
             <div style={{ float: "left", width: "25%" }}>
-                
+
                 <div id="external-events">
                     {state.externalEvents.map((event) => (
                         <DraggableShift key={event.id} event={event} />
