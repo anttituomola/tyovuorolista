@@ -16,6 +16,7 @@
     "@fullcalendar/timegrid": "^5.11.2",
     "@mui/base": "^5.0.0-alpha.92",
     "@prisma/client": "^4.1.1",
+    "bcryptjs": "^2.4.3",
     "cuid": "^2.1.8",
     "dayjs": "^1.11.4",
     "next": "12.2.3",

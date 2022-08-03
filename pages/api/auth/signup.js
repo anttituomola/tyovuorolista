@@ -1,10 +1,12 @@
-// Tuodaan prisma client käyttöön
 import prisma from "/lib/prisma"
+import hashPassword from "/lib/auth"
+
+
 const signupHandler = async (req, res) => {
     const data = req.body
-    const {email, password} = data
-    
-		// Serveripuolen validointi
+    const { email, password } = data
+
+    // Serveripuolen validointi
     if (!email || !email.includes("@") || !password) {
         return res.status(422).json({
             error: "Valid email and password are required"
@@ -22,16 +24,17 @@ const signupHandler = async (req, res) => {
             error: "User already exists"
         })
     }
-		
-		// Luodaan prisman avulla uusi käyttäjä tietokantaan
+
+    // Luodaan prisman avulla uusi käyttäjä tietokantaan
+    const hashedPassword = await hashPassword(password)
     const user = await prisma.user.create({
         data: {
             email,
-            password
+            password: hashedPassword
         }
     })
 
-		// Vastataan "uusi käyttäjä luotu" vastauksella
+    // Vastataan "uusi käyttäjä luotu" vastauksella
     res.status(201).json({
         user: user
     })
