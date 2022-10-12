@@ -17,7 +17,7 @@ const DraggableShift = memo(({ event }) => {
 
         // a cleanup function
         return () => draggable.destroy()
-    })
+    }, [])
 
     return (
         <div
@@ -36,7 +36,7 @@ const DraggableShift = memo(({ event }) => {
                 </div>
             </div>
         </div>
-    )
+                    )
 })
 
 export default DraggableShift
