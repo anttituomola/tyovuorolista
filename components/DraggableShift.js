@@ -11,7 +11,7 @@ const DraggableShift = memo(({ event }) => {
     useEffect(() => {
         let draggable = new Draggable(elRef.current, {
             eventData: function () {
-                return { ...event, create: true }
+                return { ...event }
             }
         })
 
