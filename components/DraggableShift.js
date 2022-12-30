@@ -17,6 +17,7 @@ const DraggableShift = memo(({ event }) => {
 
         // a cleanup function
         return () => draggable.destroy()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
