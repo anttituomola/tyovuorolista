@@ -16,6 +16,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "archive/Calendar.tsx", "components/DraggableShift.jsx", "pages/test.tsx", "components/DraggableShift.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "archive/Calendar.tsx", "components/DraggableShift.jsx", "pages/test.tsx", "components/DraggableShift.tsx"],
   "exclude": ["node_modules"]
 }
