@@ -7,8 +7,8 @@ import interactionPlugin from "@fullcalendar/interaction"
 import { EventLeaveArg } from "@fullcalendar/interaction"
 import { EventClickArg } from "@fullcalendar/react"
 import DraggableShift from "components/DraggableShift"
-import { Modal, Box } from '@mui/material'
 import { v4 } from "uuid"
+import { EventModal } from "components/EventModal"
 
 interface CalendarStateData {
     weekendsVisible: boolean;
@@ -52,25 +52,9 @@ export default function App() {
 
     // Handle event click
     const handleEventClick = (eventInfo: EventClickArg) => {
-        setEventInfo(eventInfo)
         setOpen(true)
-    }
-
-    const EventModal = (eventInfo: EventClickArg) => {
-        console.log(eventInfo)
-        return eventInfo && <Modal
-            open={open}
-            onClose={toggleModal}
-        >
-            <Box sx={{
-                width: 400, height: 400, bgcolor: 'background.paper', position: 'absolute' as 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-            }}>
-                <h1>{eventInfo.event.title}</h1>
-            </Box>
-        </Modal>
+        setEventInfo(eventInfo)
+        console.log(open)
     }
 
     return (
@@ -105,7 +89,7 @@ export default function App() {
                     eventReceive={(e) => handleEventReceive(e)}
                     eventClick={(e) => handleEventClick(e)}
                 />
-                {open && eventInfo && <EventModal event={eventInfo.event} />}
+                {open && <EventModal event={eventInfo} open={open} toggleModal={toggleModal}/>}
             </div>
         </div>
     )
