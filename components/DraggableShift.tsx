@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, memo } from "react"
 import { Draggable } from "@fullcalendar/interaction"
 import { EventInput } from "@fullcalendar/react"
+import { v4 } from "uuid"
 
 
 interface DraggableShiftProps {
@@ -25,6 +26,7 @@ const DraggableShift = memo(({ event }: DraggableShiftProps) => {
         <div
             ref={elRef}
             title={event.title}
+            id={v4()}
             style={{
                 backgroundColor: event.color,
                 borderColor: event.color,

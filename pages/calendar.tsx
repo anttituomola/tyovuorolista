@@ -7,8 +7,14 @@ import interactionPlugin from "@fullcalendar/interaction"
 import { EventLeaveArg } from "@fullcalendar/interaction"
 import { EventClickArg } from "@fullcalendar/react"
 import DraggableShift from "components/DraggableShift"
-import { v4 } from "uuid"
 import { EventModal } from "components/EventModal"
+import { v4 } from "uuid"
+import dayjs from "dayjs"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
+
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 
 interface CalendarStateData {
     weekendsVisible: boolean;
@@ -41,13 +47,37 @@ export default function App() {
 
     // handle event receive
     const handleEventReceive = (eventInfo: EventLeaveArg) => {
-        console.log(eventInfo)
+        // Check if there's overlapping event with same workerId
+        const overLappingEvents = calendarEvents.filter((e) => e.workerId === eventInfo.draggedEl.id)
+        console.log(overLappingEvents)
+        const isOverlapping = overLappingEvents.map(event => {
+            const eventStart = dayjs(event.start?.toString())
+            const eventEnd = dayjs(event.end?.toString())
+            const newEventStart = dayjs(eventInfo.event.startStr)
+            const newEventEnd = dayjs(eventInfo.event.endStr)
+            console.log(eventStart, eventEnd, newEventStart, newEventEnd)
+            if (newEventStart.isSameOrAfter(eventStart, "minute") && newEventStart.isSameOrBefore(eventEnd, "minute")) {
+                alert("Tämä työntekijä on jo varattu tälle aikavälille")
+                eventInfo.revert()
+                return true
+            }
+            if (newEventEnd.isSameOrAfter(eventStart, "minute") && newEventEnd.isSameOrBefore(eventEnd, "minute")) {
+                alert("Tämä työntekijä on jo varattu tälle aikavälille")
+                eventInfo.revert()
+                return true
+            }
+        })
+
+        if (isOverlapping.includes(true)) return
+
         eventInfo.revert()
         const newEvent = {
-            id: crypto.randomUUID(),
+            id: v4(),
+            workerId: eventInfo.draggedEl.id,
             title: eventInfo.event.title,
             color: eventInfo.event.backgroundColor,
             start: eventInfo.event.startStr,
+            end: eventInfo.event.endStr,
         }
         saveEvent(newEvent)
     }
@@ -63,6 +93,7 @@ export default function App() {
         const updatedEvents = [...calendarEvents, newEvent]
         setCalendarEvents(updatedEvents)
         localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
+        console.log(updatedEvents)
     }
 
     const removeEvent = (event: EventInput) => {
@@ -95,7 +126,7 @@ export default function App() {
                     eventReceive={(e) => handleEventReceive(e)}
                     eventClick={(e) => handleEventClick(e)}
                 />
-                {open && <EventModal event={eventInfo!} open={open} toggleModal={toggleModal} removeEvent={removeEvent}/>}
+                {open && <EventModal event={eventInfo!} open={open} toggleModal={toggleModal} removeEvent={removeEvent} />}
                 <div style={{ float: "left", width: "25%", margin: "1rem" }}>
 
                     <div id="external-events">
