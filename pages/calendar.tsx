@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import FullCalendar, { EventInput } from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
@@ -13,7 +13,6 @@ import { EventModal } from "components/EventModal"
 interface CalendarStateData {
     weekendsVisible: boolean;
     externalEvents: EventInput[];
-    calendarEvents: EventInput[];
 }
 
 export default function App() {
@@ -26,11 +25,19 @@ export default function App() {
             { title: "Työntekijä 3", color: "#f57f17", id: v4(), },
             { title: "Työntekijä 4", color: "#90a4ae", id: v4(), },
         ],
-        calendarEvents: []
     })
     const [open, setOpen] = useState(false)
     const [eventInfo, setEventInfo] = useState<EventClickArg>()
+    const [calendarEvents, setCalendarEvents] = useState<EventInput[]>([])
     const toggleModal = () => setOpen(!open)
+
+    useEffect(() => {
+        // See if there is any events in local storage
+        if (localStorage.getItem("calendarEvents") !== null) {
+            const events = JSON.parse(localStorage.getItem("calendarEvents")!)
+            setCalendarEvents(events)
+        }
+    }, [])
 
     // handle event receive
     const handleEventReceive = (eventInfo: EventLeaveArg) => {
@@ -41,33 +48,20 @@ export default function App() {
             color: eventInfo.event.backgroundColor,
             start: eventInfo.event.startStr,
         }
-
-        setState((state) => {
-            return {
-                ...state,
-                calendarEvents: [...state.calendarEvents, newEvent]
-            }
-        })
+        // Save state to local storage
+        const updatedEvents = [...calendarEvents, newEvent]
+        setCalendarEvents(updatedEvents)
+        localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
     }
 
     // Handle event click
     const handleEventClick = (eventInfo: EventClickArg) => {
         setOpen(true)
         setEventInfo(eventInfo)
-        console.log(open)
     }
 
     return (
         <div className="App">
-            <div style={{ float: "left", width: "25%" }}>
-
-                <div id="external-events">
-                    {state.externalEvents.map((event) => (
-                        <DraggableShift key={event.id} event={event} />
-                    ))}
-                </div>
-            </div>
-
             <div style={{ float: "left", width: "99%", margin: "5rem 0.25rem" }}>
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -85,11 +79,19 @@ export default function App() {
                     locale="fi"
                     firstDay={1}
                     droppable={true}
-                    events={state.calendarEvents}
+                    events={calendarEvents}
                     eventReceive={(e) => handleEventReceive(e)}
                     eventClick={(e) => handleEventClick(e)}
                 />
-                {open && <EventModal event={eventInfo} open={open} toggleModal={toggleModal}/>}
+                {open && <EventModal event={eventInfo!} open={open} toggleModal={toggleModal} />}
+                <div style={{ float: "left", width: "25%", margin: "1rem" }}>
+
+                    <div id="external-events">
+                        {state.externalEvents.map((event) => (
+                            <DraggableShift key={event.id} event={event} />
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     )

@@ -1,6 +1,7 @@
 import { Modal, Box, Typography } from '@mui/material'
 import { EventClickArg } from "@fullcalendar/react"
 import dayjs from 'dayjs'
+import { Button } from '@mui/material'
 
 interface modalProps {
     open: boolean,
@@ -9,9 +10,14 @@ interface modalProps {
 }
 
 export const EventModal = ({ event, open, toggleModal }: modalProps) => {
-    console.log(event.event.title)
     const startTime = dayjs(event.event.start)
     const endTime = dayjs(event.event.end)
+
+    const eventDeletion = () => {
+        event.event.remove()
+        toggleModal()
+    }
+
     return <Modal
         open={open}
         onClose={toggleModal}
@@ -31,6 +37,7 @@ export const EventModal = ({ event, open, toggleModal }: modalProps) => {
                 <p>Start: {startTime.format("HH:mm")}</p>
                 <p>End: {endTime.format("HH:mm")}</p>
                 <p>Duration: {endTime.diff(startTime, "hour", true)} hours</p>
+                <Button variant="outlined" color="error" onClick={eventDeletion}>Delete</Button>
             </Box>
         </Box>
     </Modal>
