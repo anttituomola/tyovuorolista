@@ -2,20 +2,22 @@ import { Modal, Box, Typography } from '@mui/material'
 import { EventClickArg } from "@fullcalendar/react"
 import dayjs from 'dayjs'
 import { Button } from '@mui/material'
+import { EventInput } from '@fullcalendar/react'
 
 interface modalProps {
     open: boolean,
     toggleModal: () => void,
-    event: EventClickArg
+    event: EventClickArg,
+    removeEvent: (newEvent: EventInput) => void,
 }
 
-export const EventModal = ({ event, open, toggleModal }: modalProps) => {
+export const EventModal = ({ event, open, toggleModal, removeEvent }: modalProps) => {
     const startTime = dayjs(event.event.start)
     const endTime = dayjs(event.event.end)
 
     const eventDeletion = () => {
-        event.event.remove()
         toggleModal()
+        removeEvent(event)
     }
 
     return <Modal

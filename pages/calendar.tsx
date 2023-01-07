@@ -41,6 +41,7 @@ export default function App() {
 
     // handle event receive
     const handleEventReceive = (eventInfo: EventLeaveArg) => {
+        console.log(eventInfo)
         eventInfo.revert()
         const newEvent = {
             id: crypto.randomUUID(),
@@ -48,16 +49,27 @@ export default function App() {
             color: eventInfo.event.backgroundColor,
             start: eventInfo.event.startStr,
         }
-        // Save state to local storage
-        const updatedEvents = [...calendarEvents, newEvent]
-        setCalendarEvents(updatedEvents)
-        localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
+        saveEvent(newEvent)
     }
 
     // Handle event click
     const handleEventClick = (eventInfo: EventClickArg) => {
         setOpen(true)
         setEventInfo(eventInfo)
+    }
+
+    const saveEvent = (newEvent: EventInput) => {
+        // Save state to local storage
+        const updatedEvents = [...calendarEvents, newEvent]
+        setCalendarEvents(updatedEvents)
+        localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
+    }
+
+    const removeEvent = (event: EventInput) => {
+        event.event.remove()
+        const updatedEvents = calendarEvents.filter((e) => e.id !== event.event.id)
+        setCalendarEvents(updatedEvents)
+        localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
     }
 
     return (
@@ -83,7 +95,7 @@ export default function App() {
                     eventReceive={(e) => handleEventReceive(e)}
                     eventClick={(e) => handleEventClick(e)}
                 />
-                {open && <EventModal event={eventInfo!} open={open} toggleModal={toggleModal} />}
+                {open && <EventModal event={eventInfo!} open={open} toggleModal={toggleModal} removeEvent={removeEvent}/>}
                 <div style={{ float: "left", width: "25%", margin: "1rem" }}>
 
                     <div id="external-events">
