@@ -48,26 +48,7 @@ export default function App() {
     // handle event receive
     const handleEventReceive = (eventInfo: EventLeaveArg) => {
         // Check if there's overlapping event with same workerId
-        const overLappingEvents = calendarEvents.filter((e) => e.workerId === eventInfo.draggedEl.id)
-        console.log(overLappingEvents)
-        const isOverlapping = overLappingEvents.map(event => {
-            const eventStart = dayjs(event.start?.toString())
-            const eventEnd = dayjs(event.end?.toString())
-            const newEventStart = dayjs(eventInfo.event.startStr)
-            const newEventEnd = dayjs(eventInfo.event.endStr)
-            console.log(eventStart, eventEnd, newEventStart, newEventEnd)
-            if (newEventStart.isSameOrAfter(eventStart, "minute") && newEventStart.isSameOrBefore(eventEnd, "minute")) {
-                alert("Tämä työntekijä on jo varattu tälle aikavälille")
-                eventInfo.revert()
-                return true
-            }
-            if (newEventEnd.isSameOrAfter(eventStart, "minute") && newEventEnd.isSameOrBefore(eventEnd, "minute")) {
-                alert("Tämä työntekijä on jo varattu tälle aikavälille")
-                eventInfo.revert()
-                return true
-            }
-        })
-
+        const isOverlapping = preventOverlapping(eventInfo)
         if (isOverlapping.includes(true)) return
 
         eventInfo.revert()
@@ -82,6 +63,31 @@ export default function App() {
         saveEvent(newEvent)
     }
 
+    const preventOverlapping = (eventInfo: EventInput) => {
+        console.log(eventInfo)
+        const eventsOverlapping: boolean[] = []
+        const overLappingEvents = calendarEvents.filter((e) => e.workerId === eventInfo.draggedEl?.id || e.workerId === eventInfo.event?.id)
+        overLappingEvents.map(event => {
+            const eventStart = dayjs(event.start?.toString())
+            const eventEnd = dayjs(event.end?.toString())
+            const newEventStart = dayjs(eventInfo.event.startStr)
+            const newEventEnd = dayjs(eventInfo.event.endStr)
+            if (newEventStart.isSameOrAfter(eventStart, "minute") && newEventStart.isSameOrBefore(eventEnd, "minute")) {
+                alert("Tämä työntekijä on jo varattu tälle aikavälille")
+                eventInfo.revert()
+                eventsOverlapping.push(true)
+                return
+            }
+            if (newEventEnd.isSameOrAfter(eventStart, "minute") && newEventEnd.isSameOrBefore(eventEnd, "minute")) {
+                alert("Tämä työntekijä on jo varattu tälle aikavälille")
+                eventInfo.revert()
+                eventsOverlapping.push(true)
+                return
+            }
+        })
+        return eventsOverlapping
+    }
+
     // Handle event click
     const handleEventClick = (eventInfo: EventClickArg) => {
         setOpen(true)
@@ -93,12 +99,27 @@ export default function App() {
         const updatedEvents = [...calendarEvents, newEvent]
         setCalendarEvents(updatedEvents)
         localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
-        console.log(updatedEvents)
     }
 
     const removeEvent = (event: EventInput) => {
         event.event.remove()
         const updatedEvents = calendarEvents.filter((e) => e.id !== event.event.id)
+        setCalendarEvents(updatedEvents)
+        localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
+    }
+
+    const handleEventChange = (event: EventInput) => {
+        console.log(event)
+        const isOverlapping = preventOverlapping(event)
+        if (isOverlapping.includes(true)) return        
+
+        const updatedEvents = calendarEvents.map((e) => {
+            if (e.id === event.event.id) {
+                e.start = event.event.start
+                e.end = event.event.end
+            }
+            return e
+        })
         setCalendarEvents(updatedEvents)
         localStorage.setItem("calendarEvents", JSON.stringify(updatedEvents))
     }
@@ -125,6 +146,7 @@ export default function App() {
                     events={calendarEvents}
                     eventReceive={(e) => handleEventReceive(e)}
                     eventClick={(e) => handleEventClick(e)}
+                    eventChange={(e) => handleEventChange(e)}
                 />
                 {open && <EventModal event={eventInfo!} open={open} toggleModal={toggleModal} removeEvent={removeEvent} />}
                 <div style={{ float: "left", width: "25%", margin: "1rem" }}>

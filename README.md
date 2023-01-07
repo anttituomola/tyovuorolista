@@ -1,4 +1,5 @@
 # TODO
+- Prevent dragging event from calendar on top of another event if the workerId is the same
 - Save edited events to local storage
 - Admin tool for adding workers
 - Display hours per worker
